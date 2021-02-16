@@ -463,11 +463,6 @@ function allMultiRandom()
 {
 	httpGetAsyncSpecial("/setAllRandom?deviceId=BS036121-3.1" ,pendingCheck);
 }
-function test()
-{
-	insaneFramerate(true);
-	httpGetAsyncSpecial("/test?deviceId=BS036121-3.1" ,pendingCheck);
-}
 
 function setBrightness(value)
 {
@@ -523,7 +518,6 @@ function setBrightness(value)
 <div class="group whitebg">
 	<button onclick="allOn()">All White</button><br/>
 	<button onclick="allOff()">All Off/black</button><br/>
-	<button onclick="test()">Test</button><br/>
 	<button onclick="allRandom()">All (one) Random</button><br/>
 	<button onclick="allMultiRandom()">All (multiple) Random</button><br/>
 </div>
