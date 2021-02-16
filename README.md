@@ -36,7 +36,7 @@ python blinkstickRestful.py
 
 Open the second link pointing to a /web/ folder
 
-http://192.168.1.112:80/web/index.html
+http://192.168.1.112:80/web
 
 With this site you can run a number of tests to ensure that your blinkstick is functioning.
 
