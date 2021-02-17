@@ -142,7 +142,7 @@ def startAnimation(stick,delay,count,persistent,stripCommands):
                 playanimation(stick,delay,stripCommands)
     except StopIteration:
         print "Caught"
-    if not (persistent.lower() == "true"):
+    if not (persistent == True):
         setStripColor(stick,0,0,0) # prevent staying in last state
     stick['animationThread']="Stopped"
     
