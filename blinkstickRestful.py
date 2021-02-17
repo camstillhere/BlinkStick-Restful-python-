@@ -90,8 +90,11 @@ def setStripRandomLEDColors(stick):
     stick['colors']=buffer
     
 def setStripLEDColors(stick,payload):
-    device=stick.get('device')
     maxLED=stick.get('maxLed')
+    if not (len(payload)==maxLED):
+        print("ERROR not same size array:" + str(len(payload)) + ":" + str(maxLED))
+        return
+    device=stick.get('device')
     buffer=[]
     commandBuffer=[]
     for i in range(0,maxLED):
