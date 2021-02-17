@@ -51,7 +51,7 @@ def list():
     
 def setIndexedColor(stick,index,r,g,b):
     device=stick.get('device')
-    index=int(request.args.get('index'))
+    index=int(index)
     device.set_color(red=applyBrightness(stick,r),green=applyBrightness(stick,g),blue=applyBrightness(stick,b),index=index)
     stick.get('colors')[index]={
                                 'r':r, 
@@ -132,7 +132,7 @@ def playanimation(stick,delay,stripCommands):
             raise StopIteration
         time.sleep(delay / 1000.0)
     
-def startAnimation(stick,delay,count,stripCommands):
+def startAnimation(stick,delay,count,persistent,stripCommands):
     try:
         if count > 0:
             for loopi in range(0,count):
@@ -142,7 +142,8 @@ def startAnimation(stick,delay,count,stripCommands):
                 playanimation(stick,delay,stripCommands)
     except StopIteration:
         print "Caught"
-    setStripColor(stick,0,0,0) # prevent staying in last state
+    if not (persistent.lower() == "true"):
+        setStripColor(stick,0,0,0) # prevent staying in last state
     stick['animationThread']="Stopped"
     
 
@@ -245,11 +246,12 @@ def main():
             animationContent=request.json
             delay=animationContent['delay']
             count=animationContent['count']
+            persistent=animationContent['persistent']
             stripCommands=animationContent['commands']
             if not(stick.get('animationThread') == "Stopped"):
                 return json.dumps({"success":False,"error":"Animation is currently " + stick.get('animationThread') + ", cancel with /stopAnimation"})
             
-            thread = Thread(target = startAnimation, args = (stick,delay,count,stripCommands, ))
+            thread = Thread(target = startAnimation, args = (stick,delay,count,persistent,stripCommands, ))
             thread.start()
             stick['animationThread']="Running"
             
@@ -263,7 +265,8 @@ def main():
             stick=getStick(request.args)
             if not(stick.get('animationThread') == "Stopped"):
                 stick['animationThread']="Stopping"
-            
+            while not (stick.get('animationThread') == "Stopped"):
+                status="waiting to stop"
             return json.dumps({"success":True})
         except Exception as error:
             return json.dumps({"success":False,"error":str(error)})
