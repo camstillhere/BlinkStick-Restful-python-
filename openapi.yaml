@@ -1,0 +1,353 @@
+openapi: "3.0.1"
+info:
+  description: "This is a simple RESTful based server to control one or more BlinkStick devices.<br>
+  This swagger is for [https://github.com/camstillhere/BlinkStick-Restful-python-](https://github.com/camstillhere/BlinkStick-Restful-python-)
+  <br>
+  You can find out more about Blinkstick [https://www.blinkstick.com/](https://www.blinkstick.com/)."
+  version: "1.0.0"
+  title: "Blinkstick RESTful"
+  contact:
+    email: "cameron.stiller@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+servers:
+  - url: http://localhost/
+  - url: http://192.168.1.157/
+tags:
+- name: "Animation"
+  description: "Actions you can take for animations"
+- name: "Color"
+  description: "Set the LED color"
+- name: "Device"
+  description: "Actions you can take for your devices"
+paths:
+  /list:
+    get:
+      tags:
+      - "Device"
+      summary: "Retrieves the device IDs"
+      description: "Returns an array of device identifiers that will be required to interact with the device."
+      operationId: "getDevices"
+      responses:
+        "200":
+          description: "Successful listing"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "string"
+  /setBrightness:
+    get:
+      tags:
+      - "Device"
+      summary: "Set the brightness level."
+      description: "In effect this will set the RGB values lower at a certain percentage specified"
+      operationId: "setBrightness"
+      parameters: 
+        - name: deviceId
+          in: query
+          description: The Device Id to operate on
+          required: true
+          schema:
+            type: string
+        - name: percentage
+          in: query
+          description: The Percentage of brightness to be applied
+          required: true
+          schema:
+            type: number
+            format: float
+            minimum: 0.0
+            maximum: 1.0
+      responses:
+        "200":
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+  /setColor:
+    get:
+      tags:
+      - "Color"
+      summary: "Set the color for the strip or an indexed LED"
+      description: "Set the entire strip if no index is specified. If an index is specified then only that indexed LED will be set. This was left as a GET call to provide an easy means to set it in some software. At some point it should be updated to be a POST request."
+      operationId: "setColor"
+      parameters:
+        - name: deviceId
+          in: query
+          description: The Device Id to operate on
+          required: true
+          schema:
+            type: string
+        - name: index
+          in: query
+          description: The Index to be set (optional)
+          required: false
+          schema:
+            type: integer
+        - name: r
+          in: query
+          description: The red channel 0-255
+          required: true
+          schema:
+            type: integer
+        - name: g
+          in: query
+          description: The green channel 0-255
+          required: true
+          schema:
+            type: integer
+        - name: b
+          in: query
+          description: The blue channel 0-255
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+  /setColors:
+    post:
+      tags:
+      - "Color"
+      summary: "Set the color for all the LED in the strip"
+      description: "All indexes can be set using this method all at the same time. Best used for animation or important transitions."
+      operationId: "setColors"
+      parameters:
+        - name: deviceId
+          in: query
+          description: The Device Id to operate on
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 1
+              maxItems: 32
+              items:
+                type: object
+                required:
+                  - r
+                  - g
+                  - b
+                properties:
+                  r:
+                    type: integer
+                    description: "The red channel 0-255"
+                  g:
+                    type: integer
+                    description: "The green channel 0-255"
+                  b:
+                    description: "The blue channel 0-255"
+                    type: integer
+                
+      responses:
+        "200":
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+  /setRandom:
+    get:
+      tags:
+      - "Color"
+      summary: "Set the color for the strip or an indexed LED to a single random color"
+      description: "Set the entire strip if no index is specified. If an index is specified then only that indexed LED will be set. This was left as a GET call to provide an easy means to set it in some software. At some point it should be updated to be a POST request."
+      operationId: "setRandom"
+      parameters:
+        - name: deviceId
+          in: query
+          description: The Device Id to operate on
+          required: true
+          schema:
+            type: string
+        - name: index
+          in: query
+          description: The Index to be set (optional)
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+  /getColor:
+    get:
+      tags:
+      - "Color"
+      summary: "Get the color for the strip or an indexed LED"
+      description: "Get the RGB values for the strip or just the indexed value"
+      operationId: "getColor"
+      parameters:
+        - name: deviceId
+          in: query
+          description: The Device Id to operate on
+          required: true
+          schema:
+            type: string
+        - name: index
+          in: query
+          description: The Index to be checked (optional)
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Successful - Index Specified"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        description: "indicates succes for the operation"
+                      colors:
+                        type: array
+                        description: "RGB color at the index matching the size of the blinkstick device"
+                        items:
+                          type: object
+                          properties:
+                            r:
+                              type: integer
+                              description: "The red channel 0-255"
+                            g:
+                              type: integer
+                              description: "The green channel 0-255"
+                            b:
+                              description: "The blue channel 0-255"
+                              type: integer
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        description: "indicates succes for the operation"
+                      color:
+                        type: object
+                        description: "RGB color at the index requested"
+                        properties:
+                          r:
+                            type: integer
+                            description: "The red channel 0-255"
+                          g:
+                            type: integer
+                            description: "The green channel 0-255"
+                          b:
+                            description: "The blue channel 0-255"
+                            type: integer
+  /stopAnimation:
+     get:
+      tags:
+      - "Animation"
+      summary: "Stops the active animation."
+      description: "If an animation is running this will stop the animation and wait until the animation has reached a safe state before returning."
+      operationId: "stopAnimation"
+      parameters:
+        - name: deviceId
+          in: query
+          description: The Device Id to operate on
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Animation Response"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: "indicates succes for the operation"
+                  error:
+                    type: string
+  /startAnimation:
+     post:
+      tags:
+      - "Animation"
+      summary: "Start an animation."
+      description: "Will start a new animation if one is not running already. If an animation is already running a error will return and no state will change."
+      operationId: "startAnimation"
+      parameters:
+        - name: deviceId
+          in: query
+          description: The Device Id to operate on
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                delay:
+                  type: integer
+                  description: "how long between commands"
+                count:
+                  type: integer
+                  description: "how many times to perform the animation"
+                persistent:
+                  type: boolean
+                  description: "Whether to leave the final state or return to all off"
+                commands:
+                  type: array
+                  minItems: 1
+                  maxItems: 32
+                  items:
+                    type: object
+                    required:
+                      - r
+                      - g
+                      - b
+                    properties:
+                      r:
+                        type: integer
+                        description: "The red channel 0-255"
+                      g:
+                        type: integer
+                        description: "The green channel 0-255"
+                      b:
+                        description: "The blue channel 0-255"
+                        type: integer
+      responses:
+        "200":
+          description: "Animation Response"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: "indicates succes for the operation"
+                  error:
+                    type: string
