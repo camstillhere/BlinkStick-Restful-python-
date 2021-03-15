@@ -4,7 +4,7 @@
 import random, time
 from threading import Thread
 from blinkstick import blinkstick
-from flask import Flask, json, request
+from flask import Flask, json, request, Response
 #from threading import Lock for another day/time
 
 
@@ -173,7 +173,7 @@ def main():
 
     @api.route('/list', methods=['GET'])
     def get_devices():
-      return json.dumps(list())
+      return Response(json.dumps(list()),"application/json")
       
     @api.route('/setColor', methods=['GET'])
     def set_one_color():
@@ -184,9 +184,9 @@ def main():
                 setIndexedColor(stick,request.args.get('index'),r,g,b)
             else:
                 setStripColor(stick,r,g,b)
-            return json.dumps({"success":True})
+            return Response(json.dumps({"success":True}),"application/json")
         except Exception as error:
-            return json.dumps({"success":False,"error":str(error)})
+            return Response(json.dumps({"success":False,"error":str(error)}),"application/json")
             
     @api.route('/setColors', methods=['POST'])
     def set_strip_colors():
@@ -194,9 +194,9 @@ def main():
             stick=getStick(request.args)
             content=request.json
             setStripLEDColors(stick,content)
-            return json.dumps({"success":True})
+            return Response(json.dumps({"success":True}),"application/json")
         except Exception as error:
-            return json.dumps({"success":False,"error":str(error)})
+            return Response(json.dumps({"success":False,"error":str(error)}),"application/json")
             
     @api.route('/setRandom', methods=['GET'])
     def set_random_same_color():
@@ -207,9 +207,9 @@ def main():
                 setIndexedColor(stick.get('device'),request.args.get('index'),r,g,b)
             else:
                 setStripColor(stick,r,g,b)
-            return json.dumps({"success":True})
+            return Response(json.dumps({"success":True}),"application/json")
         except Exception as error:
-            return json.dumps({"success":False,"error":str(error)})
+            return Response(json.dumps({"success":False,"error":str(error)}),"application/json")
 
     @api.route('/getColor', methods=['GET'])
     def get_all_colors():
@@ -217,20 +217,20 @@ def main():
             stick=getStick(request.args)
             colors=stick.get('colors')
             if("index" in request.args):
-                return json.dumps({"success":True,"color":colors.get(request.args.get('index'))})
+                return Response(json.dumps({"success":True,"color":colors.get(request.args.get('index'))}),"application/json")
             else:
-                return json.dumps({"success":True,"colors":colors})
+                return Response(json.dumps({"success":True,"colors":colors}),"application/json")
         except Exception as error:
-            return json.dumps({"success":False,"error":str(error)})
+            return Response(json.dumps({"success":False,"error":str(error)}),"application/json")
             
     @api.route('/setAllRandom', methods=['GET'])
     def set_random_individual_color():
         try:
             stick=getStick(request.args)
             setStripRandomLEDColors(stick)
-            return json.dumps({"success":True})
+            return Response(json.dumps({"success":True}),"application/json")
         except Exception as error:
-            return json.dumps({"success":False,"error":str(error)})
+            return Response(json.dumps({"success":False,"error":str(error)}),"application/json")
 
     @api.route('/setBrightness', methods=['GET'])
     def set_brightness():
@@ -238,9 +238,9 @@ def main():
             stick=getStick(request.args)
             brightness=float(request.args.get('percent'))
             setBrightness(stick,brightness)
-            return json.dumps({"success":True})
+            return Response(json.dumps({"success":True}),"application/json")
         except Exception as error:
-            return json.dumps({"success":False,"error":str(error)})
+            return Response(json.dumps({"success":False,"error":str(error)}),"application/json")
             
     @api.route('/startAnimation', methods=['POST'])
     def start_animation():
@@ -252,15 +252,15 @@ def main():
             persistent=animationContent['persistent']
             stripCommands=animationContent['commands']
             if not(stick.get('animationThread') == "Stopped"):
-                return json.dumps({"success":False,"error":"Animation is currently " + stick.get('animationThread') + ", cancel with /stopAnimation"})
+                return Response(json.dumps({"success":False,"error":"Animation is currently " + stick.get('animationThread') + ", cancel with /stopAnimation"}),"application/json")
             
             thread = Thread(target = startAnimation, args = (stick,delay,count,persistent,stripCommands, ))
             thread.start()
             stick['animationThread']="Running"
             
-            return json.dumps({"success":True})
+            return Response(json.dumps({"success":True}),"application/json")
         except Exception as error:
-            return json.dumps({"success":False,"error":str(error)})
+            return Response(json.dumps({"success":False,"error":str(error)}),"application/json")
             
     @api.route('/stopAnimation', methods=['GET'])
     def stop_animation():
@@ -270,9 +270,9 @@ def main():
                 stick['animationThread']="Stopping"
             while not (stick.get('animationThread') == "Stopped"):
                 status="waiting to stop"
-            return json.dumps({"success":True})
+            return Response(json.dumps({"success":True}),"application/json")
         except Exception as error:
-            return json.dumps({"success":False,"error":str(error)})
+            return Response(json.dumps({"success":False,"error":str(error)}),"application/json")
             
     @api.route('/web', methods=['GET'])
     def show_demo_page():
