@@ -21,12 +21,45 @@ tags:
   description: "Set the LED color"
 - name: "Device"
   description: "Actions you can take for your devices"
+- name: "Utility"
+  description: "Conversion Utilities"
 paths:
+  /getNamedColor:
+    get:
+      tags:
+      - "Utility"
+      summary: "Get an rgb color from a name"
+      description: "Will return the rgb values for a color name"
+      operationId: "getNameFromColor"
+      parameters: 
+        - name: name
+          in: query
+          description: The color name to be converted
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  r:
+                    type: integer
+                    description: "The red channel 0-255"
+                  g:
+                    type: integer
+                    description: "The green channel 0-255"
+                  b:
+                    description: "The blue channel 0-255"
+                    type: integer
   /list:
     get:
       tags:
       - "Device"
-      summary: "Retrieves the device IDs"
+      summary: "Retrieve the blinkstick devices"
       description: "Returns an array of device identifiers that will be required to interact with the device."
       operationId: "getDevices"
       responses:
@@ -123,7 +156,7 @@ paths:
     post:
       tags:
       - "Color"
-      summary: "Set the color for all the LED in the strip"
+      summary: "Set individual colors for each LED simultaneously"
       description: "All indexes can be set using this method all at the same time. Best used for animation or important transitions."
       operationId: "setColors"
       parameters:
