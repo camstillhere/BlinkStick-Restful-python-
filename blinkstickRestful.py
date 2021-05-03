@@ -939,6 +939,18 @@ def setStripColor(stick,r,g,b):
                 'g':g, 
                 'b':b}]*maxLED
                 
+def setStripByPercentageColor(stick,r,g,b,percent):
+    device=stick.get('device')
+    maxLED=stick.get('maxLed')
+    onLED=int(percent * maxLED/ 100)
+    offLED=int(maxLED-onLED)
+    payloadOn=[applyBrightness(stick,g), applyBrightness(stick,r), applyBrightness(stick,b)]*onLED
+    payloadOff=[0, 0, 0]*offLED
+    payload=payloadOn+payloadOff
+    setStripColors(device,payload)
+    stick['colors']=payload
+    
+                
 def setStripRandomLEDColors(stick):
     device=stick.get('device')
     maxLED=stick.get('maxLed')
@@ -1052,6 +1064,16 @@ def main():
                 setIndexedColor(stick,request.args.get('index'),r,g,b)
             else:
                 setStripColor(stick,r,g,b)
+            return Response(json.dumps({"success":True}), mimetype="application/json")
+        except Exception as error:
+            return Response(json.dumps({"success":False,"error":str(error)}), mimetype="application/json")
+            
+    @api.route('/setColorByPercentage', methods=['GET'])
+    def set_precent_color():
+        try:
+            stick,r,g,b=getColorParams(request.args)
+            percent=int(request.args.get('percent'))
+            setStripByPercentageColor(stick,r,g,b,percent)
             return Response(json.dumps({"success":True}), mimetype="application/json")
         except Exception as error:
             return Response(json.dumps({"success":False,"error":str(error)}), mimetype="application/json")
