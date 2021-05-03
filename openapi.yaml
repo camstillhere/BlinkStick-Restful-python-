@@ -104,59 +104,11 @@ paths:
                 properties:
                   success:
                     type: boolean
-  /setColorByPercentage:
-    get:
-      tags:
-      - "Color"
-      summary: "Set the color by percentage"
-      description: "Set the entire strip if no index is specified. If an index is specified then only that indexed LED will be set. This was left as a GET call to provide an easy means to set it in some software. At some point it should be updated to be a POST request."
-      operationId: "setColorByPercentage"
-      parameters:
-        - name: deviceId
-          in: query
-          description: The Device Id to operate on
-          required: true
-          schema:
-            type: string
-        - name: percent
-          in: query
-          description: The Percentage of the strip to set based
-          required: true
-          schema:
-            type: integer
-        - name: r
-          in: query
-          description: The red channel 0-255
-          required: true
-          schema:
-            type: integer
-        - name: g
-          in: query
-          description: The green channel 0-255
-          required: true
-          schema:
-            type: integer
-        - name: b
-          in: query
-          description: The blue channel 0-255
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Successful"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
   /setColor:
     get:
       tags:
       - "Color"
-      summary: "Set the color for the whole strip or an indexed LED"
+      summary: "Set the color for the strip or an indexed LED"
       description: "Set the entire strip if no index is specified. If an index is specified then only that indexed LED will be set. This was left as a GET call to provide an easy means to set it in some software. At some point it should be updated to be a POST request."
       operationId: "setColor"
       parameters:
